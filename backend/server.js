@@ -1,7 +1,7 @@
-require('dotenv').config();
-
 const app = require("./app");
 const mongoose = require("mongoose");
+
+require('dotenv').config();
 const run = async () => {
     try {
         const port = process.env.PORT || 3000;

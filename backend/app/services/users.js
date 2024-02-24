@@ -1,4 +1,4 @@
-const UserModel = require('../models/user');
+const UserModel = require('../models/users');
 
 module.exports = {
     createUser: async (userObject) => {
@@ -23,16 +23,16 @@ module.exports = {
     }
 }
 
-export async function getUser(userName){
-    const user = await UserModel.findByUserName(userName);
-    const {name, passHash} = user;
-    return {
-        name,
-        passHash
-    };
-};
+// export async function getUser(userName){
+//     const user = await UserModel.findByUserName(userName);
+//     const {name, passHash} = user;
+//     return {
+//         name,
+//         passHash
+//     };
+// };
 
 
-export async function getUser(name, passHash){
-    return await UserModel.create({name,passHash});
-};
+// export async function getUser(name, passHash){
+//     return await UserModel.create({name,passHash});
+// };
