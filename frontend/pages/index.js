@@ -7,11 +7,8 @@ require('dotenv').config();
 export default function App() {
   const [isLogged, setIsLogged] = React.useState(false);
 
-  const data = axios.get(process.env.SERVER_URL + '/users/s',{
-    headers: {
-      'Authorization': `Bearer ${headers.getItem('token')}`
-    }
-  })
+  function login(){};
+ 
   
   
   return isLogged ? <h1>Logged in</h1> : <Sign > </Sign>;

@@ -2,7 +2,7 @@
 const axios = require('axios');
 
 describe('Users', () => {
-  const URL = 'http://localhost:3000';
+  const URL = `http://localhost:${process.env.PORT || 3000}`;
   let request;
   let server;
   let token='';
