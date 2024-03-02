@@ -5,12 +5,8 @@ module.exports = {
         return await UserModel.create({...userObject});
     },
     getUser: async (userName) => {
-        const user = await UserModel.findByUserName(userName);
-        const {name, passHash} = user;
-        return {
-            name,
-            passHash
-        };
+        //return all the details of the user, use findOne
+        return await UserModel.find({userName: userName});
     },
     deleteUser: async (id) => {
         return await UserModel.delete(id);
@@ -18,8 +14,19 @@ module.exports = {
     updateUser: async (id, name) => {
         return await UserModel.update(id, name);
     },
-    listUserNames: async () => {
-        return await UserModel.getAll();
+    listUserNames: async (search,paging,offset) => {
+        const filter = {};
+        if(!paging){
+            paging = 10;
+        }
+        if(!offset){
+            offset = 0;
+        }
+        if(!search){
+            filter.userName = new RegExp(search, 'gi');
+        }
+        console.log(await UserModel.find(filter)).limit(paging).skip(offset);
+        return await UserModel.find(filter).limit(paging).skip(offset);
     }
 }
 

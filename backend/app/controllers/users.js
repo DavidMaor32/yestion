@@ -1,20 +1,46 @@
-const { getAllProducts, getProduct, createProduct } = require('../services/users')
+const { getUser, createUser, deleteUser,updateUser,listUserNames } = require('../services/users')
 
 module.exports = {
     ListUserNames: async (req, res) => {
         try {
-            const products = await getAllProducts()
-            res.json(products)
+            const {search,paging, offset} = req.query
+            
+            const users = await listUserNames(search,paging,offset);
+            res.json(users.map(user => user.userName))
         }
         catch (err) {
+            res.status(500).send(err)
+        }
+    },
+    login: async (req, res) => {
+        try {
+            const { userName, password } = req.body
+            if(!userName || !password) {
+                return res.status(400).send('Missing required fields')
+            }
+            const user = (await getUser(userName))[0]
+            if(!user) {
+                return res.status(404).send('User not found')
+            }
+            console.log(user)
+            if(!require('bcrypt').compareSync(password, user.passHash)) {
+                return res.status(401).send('Invalid password')
+            }
+            const token = require('jsonwebtoken').sign({ id: user.id }, process.env.JWT_SECRET, {
+                expiresIn: '15m'
+            });
+            res.header('Authorization', `Bearer ${token}`).send(user);
+        }
+        catch (err) {
+            console.log(err)
             res.status(500).send(err)
         }
     },
     getUser: async (req, res) => {
         try {
             const id = req.params.id
-            const product = await getProduct(id)
-            res.json(product)
+            const user = await getUser(id)
+            res.json(user)
         }
         catch (err) {
             res.status(500).send(err)
@@ -26,13 +52,12 @@ module.exports = {
             if(!userName || !password || !email || !fName || !lName) {
                 return res.status(400).send('Missing required fields')
             }
-
-
-
-            const passHash = require('bcrypt').hashSync(password, process.env.BCRYPT_KEY);
+            
+            
+            
+            const passHash = require('bcrypt').hashSync(password, 10);
             const newUser = await createUser({userName, passHash, email, fName, lName})
-            res.json(newUser)
-            const token = require('jsonwebtoken').sign({ id: newUser.id }, process.env.TOKEN_SECRET, {
+            const token = require('jsonwebtoken').sign({ id: newUser.id }, process.env.JWT_SECRET, {
                 expiresIn: '15m'
             });
             res.header('Authorization', `Bearer ${token}`).send(newUser);
@@ -43,9 +68,20 @@ module.exports = {
     },
     deleteUser: async (req, res) => {
         try {
-            const id = req.params.id
-            await deleteProduct(id)
-            res.json({ message: 'Product deleted' })
+            const {password, userName} = req.body;
+            if(!password || !userName) {
+                return res.status(400).send('Missing required fields')
+            }
+            //verify password
+            const user = (await getUser(userName))[0]
+            if(!user) {
+                return res.status(404).send('User not found')
+            }
+            if(!require('bcrypt').compareSync(password, user.passHash)) {
+                return res.status(401).send('Invalid password')
+            }
+            const deletedUser = await deleteUser(user.userName);
+            res.json(deletedUser);
         }
         catch (err) {
             res.status(500).send(err)
@@ -55,8 +91,8 @@ module.exports = {
         try {
             const id = req.params.id
             const { name } = req.body
-            const updatedProduct = await updateProduct(id, name)
-            res.json(updatedProduct)
+            const updatedUser = await updateUser(id, name)
+            res.json(updatedUser)
         }
         catch (err) {
             res.status(500).send(err)
