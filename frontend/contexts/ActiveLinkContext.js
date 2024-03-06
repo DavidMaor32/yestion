@@ -1,5 +1,8 @@
 const { createContext } = require("react");
 
-const ActiveLinkContext = createContext('/');
+const ActiveLinkContext = createContext({
+    activeLink: "",
+    setActiveLink: () => {},
+});
 
 export default ActiveLinkContext;

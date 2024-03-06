@@ -7,7 +7,8 @@ const listSchema = new Schema({
     Owner: { type: Schema.Types.ObjectId, ref: 'User' },
     createdAt: { type: Date, default: Date.now },
     isFavorite: { type: Boolean, default: false },
-    description: { type: String, default: '' },            
+    description: { type: String, default: '' },
+    notes: [{ type: Schema.Types.ObjectId, ref: 'Note' }]            
 
 });
 

@@ -1,16 +1,16 @@
-const controller = require('../controllers/users.js');
+const controller = require("../controllers/users.js");
 
-const router = require('express').Router();
+const router = require("express").Router();
 
-const cache = require('../middlewares/cache');
-const auth = require('../middlewares/auth');
+const cache = require("../middlewares/cache");
+const auth = require("../middlewares/auth");
 
-router.post('/sign-up', controller.createUser);
-router.get('/login', controller.login);
-router.get('/:username', auth, cache, controller.getUser);
-router.get('/', cache, controller.ListUserNames);
-router.put('/:username', auth, controller.updateUser);
-router.delete('/:username', auth, controller.deleteUser);
+router.post("/sign-up", controller.createUser);
+router.post("/login", controller.login);
+router.get("/:username", cache, controller.getUser);
+router.get("/search", cache, controller.ListUserNames);
+router.put("/:username", controller.updateUser);
+router.delete("/:username", controller.deleteUser);
+router.get("/ping", controller.ping);
 
-
-module.exports = router; 
+module.exports = router;

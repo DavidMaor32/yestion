@@ -1,5 +1,8 @@
 import { createContext } from "react";
 
-const BearerContext = createContext('');
+const BearerContext = createContext({
+    bearer: "",
+    setBearer: () => {},
+});
 
 export default BearerContext;

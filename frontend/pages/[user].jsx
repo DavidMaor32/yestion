@@ -1,21 +1,28 @@
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useState } from "react";
-
+import { useContext, useState } from "react";
+import BearerContext from "../contexts/BearerContext";
+import { useUser } from "../contexts/UserContext";
 
 
 export default function User() {
     const router = useRouter();
     const { username } = router.query;
-    const[user, setUser] = useState({});
+    // const [user, setUser] = useState({});
+    const bearer = useContext(BearerContext);
+    const user = useUser();
 
-    async function getUser(){
-        const response = await axios.get(process.env.SERVER_URL + "/users/" + username,{
-            headers:{
-                Bearer: localStorage.getItem("token")
+    console.log(user);
+    async function getUser() {
+
+
+
+        const response = await axios.post(process.env.SERVER_URL + "/users/" + username, {
+            headers: {
+                Bearer: bearer
             }
         });
-        
+
         switch (response.status) {
             case 200:
                 setUser(response.data);
@@ -35,9 +42,9 @@ export default function User() {
 
     return (
         <div>
-            {
-                user.usereName
-            }
+
+            this is user {JSON.stringify(user)}
+
         </div>
     );
 }

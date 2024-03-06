@@ -6,7 +6,7 @@ module.exports = {
     },
     getUser: async (userName) => {
         //return all the details of the user, use findOne
-        return await UserModel.find({userName: userName});
+        return await UserModel.findOne({userName: userName});
     },
     deleteUser: async (id) => {
         return await UserModel.delete(id);
@@ -25,7 +25,7 @@ module.exports = {
         if(!search){
             filter.userName = new RegExp(search, 'gi');
         }
-        console.log(await UserModel.find(filter)).limit(paging).skip(offset);
+        
         return await UserModel.find(filter).limit(paging).skip(offset);
     }
 }
