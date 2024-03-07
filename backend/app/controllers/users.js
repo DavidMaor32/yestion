@@ -26,22 +26,22 @@ module.exports = {
       }
       const user = await getUser(userName);
       if (!user) {
-        console.log("1");
         return res.status(404).json({ message: "User not found" });
       }
       if (!require("bcrypt").compareSync(password, user.passHash)) {
-        console.log("2");
         return res.status(401).send("Invalid password");
       }
-      const token = require("jsonwebtoken").sign(
-        { id: user.id },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: "15m",
-        }
-      );
-      console.log(user);
-      res.header("Authorization", `Bearer ${token}`).send(user);
+
+      res.send({
+        userName: user.userName,
+        email: user.email,
+        fName: user.fName,
+        lName: user.lName,
+        friends: user.friends,
+        friendRequests: user.friendRequests,
+        sentRequests: user.sentRequests,
+        sharedLists: user.sharedLists,
+      });
     } catch (err) {
       console.log(err);
       res.status(500).send(err);
@@ -51,8 +51,12 @@ module.exports = {
     try {
       const id = req.params.id;
       const user = await getUser(id);
-      let usr;
-      res.json(user);
+      res.json({
+        userName: user.userName,
+        email: user.email,
+        fName: user.fName,
+        lName: user.lName,
+      });
     } catch (err) {
       res.status(500).send(err);
     }
@@ -72,14 +76,8 @@ module.exports = {
         fName,
         lName,
       });
-      const token = require("jsonwebtoken").sign(
-        { id: newUser.id },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: "15m",
-        }
-      );
-      res.header("Authorization", `Bearer ${token}`).send(newUser);
+
+      res.send(newUser);
     } catch (err) {
       res.status(500).send(err);
     }

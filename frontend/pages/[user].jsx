@@ -1,50 +1,57 @@
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useContext, useState } from "react";
-import BearerContext from "../contexts/BearerContext";
+import { useContext, useEffect, useState } from "react";
 import { useUser } from "../contexts/UserContext";
 
-
+//is user is not the signed one, retrieve the user's data from the server
 export default function User() {
+    const [edit, setEdit] = useState(false);
     const router = useRouter();
-    const { username } = router.query;
-    // const [user, setUser] = useState({});
-    const bearer = useContext(BearerContext);
     const user = useUser();
 
-    console.log(user);
-    async function getUser() {
+    async function getUser(username) {
+        try {
+            const response = await axios.get(process.env.NEXT_PUBLIC_SERVER_URL + "/users/" + username);
+            console.log(response);
+            return response;
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+    async function getLists(username) {
+        try {
+            const response = await axios.get(process.env.NEXT_PUBLIC_SERVER_URL + "/lists/ " + username);
+            console.log(response);
+            return response;
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
 
-
-
-        const response = await axios.post(process.env.SERVER_URL + "/users/" + username, {
-            headers: {
-                Bearer: bearer
-            }
-        });
-
-        switch (response.status) {
-            case 200:
-                setUser(response.data);
-                break;
-            case 401:
-                router.push("/401");
-                break;
-            case 404:
-                router.push("/404");
-                break;
-            default:
-                router.push("/500");
-                break;
+    async function getPublicLists(username) {
+        try {
+            const response = await axios.get(process.env.NEXT_PUBLIC_SERVER_URL + "/lists/public/" + username);
+            console.log(response);
+            return response;
+        }
+        catch (err) {
+            console.log(err);
         }
     }
 
 
+
+
+
     return (
-        <div>
+        <>
+            {
+                user && user.userName == router.query.user && <button onClick={() => setEdit(!edit)}>Edit</button>
+            }
 
-            this is user {JSON.stringify(user)}
 
-        </div>
+        </>
     );
 }

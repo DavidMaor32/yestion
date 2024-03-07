@@ -1,19 +1,36 @@
-/* FILEPATH: /Users/pandaunicorn/yestion/frontend/styles/Header.module.css */
-
 .header {
   background-color: #f2f2f2;
   padding: 20px;
   text-align: center;
+  /* align items horizontal */
+  display: flex;
 }
 
 .header h1 {
-  color: #333;
   font-size: 24px;
+  color: #333;
+}
+
+.header nav {
+  
+}
+
+.header nav ul {
+  list-style: none;
+  padding: 0;
   margin: 0;
 }
 
-.header p {
+.header nav ul li {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.header nav ul li a {
+  text-decoration: none;
   color: #666;
-  font-size: 16px;
-  margin: 10px 0;
+}
+
+.header nav ul li a:hover {
+  color: #000;
 }

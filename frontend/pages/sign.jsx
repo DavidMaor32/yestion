@@ -27,7 +27,6 @@ export default function Sign() {
     const [email, setEmail] = useState("");
     const [fName, setFName] = useState("");
     const [lName, setLName] = useState("");
-    const bearer = useContext(BearerContext);
     const router = useRouter();
     const setUser = useUserState();
 
@@ -54,7 +53,7 @@ export default function Sign() {
         try {
             const response = await axios.post(process.env.NEXT_PUBLIC_SERVER_URL + "/users/sign-up", {
 
-                username: userName,
+                userName: userName,
                 password: password,
                 email: email,
                 fName: fName,
@@ -83,13 +82,14 @@ export default function Sign() {
             switch (response.status) {
                 case 200:
                     setUser(response.data);
+                    localStorage.setItem("user", JSON.stringify(response.data));
                     router.push(`/${response.data.userName}`);
                     break;
                 case 401:
                     router.push("/401");
                     break;
                 case 404:
-                    router.push("/404");
+                    alert("user not found");
                     break;
                 default:
                     break;
