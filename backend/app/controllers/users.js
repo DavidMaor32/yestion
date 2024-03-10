@@ -10,7 +10,7 @@ module.exports = {
   ListUserNames: async (req, res) => {
     try {
       const { search, paging, offset } = req.query;
-
+      console.log(search, paging, offset);
       const users = await listUserNames(search, paging, offset);
       res.json(users.map((user) => user.userName));
     } catch (err) {
@@ -19,7 +19,6 @@ module.exports = {
   },
   login: async (req, res) => {
     try {
-      console.log(req.body);
       const { userName, password } = req.body;
       if (!userName || !password) {
         return res.status(400).send("Missing required fields");
@@ -49,8 +48,9 @@ module.exports = {
   },
   getUser: async (req, res) => {
     try {
-      const id = req.params.id;
-      const user = await getUser(id);
+      const username = req.params.username;
+      const user = await getUser(username);
+      if (!user) return res.status(404).send("User not found");
       res.json({
         userName: user.userName,
         email: user.email,
@@ -58,6 +58,7 @@ module.exports = {
         lName: user.lName,
       });
     } catch (err) {
+      console.log(err);
       res.status(500).send(err);
     }
   },
@@ -76,9 +77,9 @@ module.exports = {
         fName,
         lName,
       });
-
       res.send(newUser);
     } catch (err) {
+      console.log(err);
       res.status(500).send(err);
     }
   },
@@ -89,7 +90,7 @@ module.exports = {
         return res.status(400).send("Missing required fields");
       }
       //verify password
-      const user = (await getUser(userName))[0];
+      const user = await getUser(userName);
       if (!user) {
         return res.status(404).send("User not found");
       }
@@ -99,16 +100,23 @@ module.exports = {
       const deletedUser = await deleteUser(user.userName);
       res.json(deletedUser);
     } catch (err) {
+      console.log(err);
       res.status(500).send(err);
     }
   },
   updateUser: async (req, res) => {
     try {
-      const id = req.params.id;
-      const { name } = req.body;
-      const updatedUser = await updateUser(id, name);
+      const username = req.params.username;
+      const { newUsername, email, newPassword, lName, fName } = req.body;
+      const newInfo = { newUsername, email, newPassword, lName, fName };
+      newInfo.newPassword = newInfo.newPassword
+        ? require("bcrypt").hashSync(newPassword, 10)
+        : undefined;
+      const updatedUser = await updateUser(username, newInfo);
+      if (!updatedUser) return res.status(404).send("User not found");
       res.json(updatedUser);
     } catch (err) {
+      console.log(err);
       res.status(500).send(err);
     }
   },

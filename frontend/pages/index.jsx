@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import Sign from './sign';
 import { useRouter } from 'next/router';
+import { useUser, useUserState } from '../contexts/UserContext';
 
 export default function App() {
-  const [user, setUser] = useState(null);
   const router = useRouter();
+  const user = useUser();
+  const setUser = useUserState();
+
   useEffect(() => {
-    if (localStorage.getItem('user')) {
-      setUser(JSON.parse(localStorage.getItem('user')));
+    const storedUser = localStorage.getItem('user');
+    if (storedUser && !user) {
+      setUser(JSON.parse(storedUser));
     }
-  }
-    , []);
+  });
 
-
-  return user ? router.push(`/${user.userName}`) : <Sign > </Sign>;
+  return <>
+    {
+      user ? router.push('/' + user.userName) : <Sign />
+    }
+  </>;
 }

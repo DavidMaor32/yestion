@@ -1,11 +1,12 @@
 import { useState } from "react";
 import regex from "../utils/regex";
 import styles from "../styles/Sign.module.css";
-import { useContext } from "react";
-import BearerContext from "../contexts/BearerContext";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { useUserState } from "../contexts/UserContext";
+import Footer from "../components/Footer";
+
+
 const myAxios = axios.create({
     validateStatus: function (status) {
         return status < 500;
@@ -22,8 +23,8 @@ const styles_local = {
 
 export default function Sign() {
     const [isSignUp, setIsSignUp] = useState(false);
-    const [username, setUsername] = useState("davidmaor");
-    const [password, setPassword] = useState("admin123");
+    const [username, setUsername] = useState("davidmaor32");
+    const [password, setPassword] = useState("password123");
     const [email, setEmail] = useState("");
     const [fName, setFName] = useState("");
     const [lName, setLName] = useState("");
@@ -31,41 +32,30 @@ export default function Sign() {
     const setUser = useUserState();
 
     async function signIn(userName, password) {
-        try {
-            const response = await myAxios.post(
-                process.env.NEXT_PUBLIC_SERVER_URL + "/users/login",
-                {
-                    userName: userName,
-                    password: password,
+        const response = await myAxios.post(
+            process.env.NEXT_PUBLIC_SERVER_URL + "/users/login",
+            {
+                userName: userName,
+                password: password,
 
-                }
-            );
-            console.log(response);
-            return response;
-        }
-        catch (err) {
-            console.log(err);
-        }
+            });
+        return response;
+
 
     };
 
     async function signUp(userName, password, email, fName, lName) {
-        try {
-            const response = await axios.post(process.env.NEXT_PUBLIC_SERVER_URL + "/users/sign-up", {
-
+        const response = await axios.post(
+            process.env.NEXT_PUBLIC_SERVER_URL + "/users/sign-up",
+            {
                 userName: userName,
                 password: password,
                 email: email,
                 fName: fName,
                 lName: lName
 
-            })
-
-            return response;
-        }
-        catch (err) {
-            console.log(err);
-        }
+            });
+        return response;
 
     }
 
@@ -77,7 +67,6 @@ export default function Sign() {
             } else {
                 response = await signIn(username, password);
             }
-            console.log(response)
 
             switch (response.status) {
                 case 200:
@@ -86,10 +75,10 @@ export default function Sign() {
                     router.push(`/${response.data.userName}`);
                     break;
                 case 401:
-                    router.push("/401");
+                    alert("wrong password");
                     break;
                 case 404:
-                    alert("user not found");
+                    router.push("/404");
                     break;
                 default:
                     break;
@@ -98,12 +87,11 @@ export default function Sign() {
         catch (er) {
             alert(er)
         }
-
     }
 
     return (
         <div>
-            <h1>Sign</h1>
+            <h1>Yestion</h1>
             <div className={styles.sign}>
                 <input type="text" placeholder="username" regex={regex.username} value={username} onChange={e => { setUsername(e.target.value) }} />
                 <input type="password" placeholder="password" regex={regex.password} value={password} onChange={e => { setPassword(e.target.value) }} />
@@ -115,6 +103,7 @@ export default function Sign() {
                 </a>
                 <button onClick={submitHandler} >{isSignUp ? 'sign up' : 'login'}</button>
             </div>
+            <Footer />
         </div>
     );
 }
